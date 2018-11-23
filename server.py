@@ -27,23 +27,29 @@ class EchoHandler(socketserver.DatagramRequestHandler):
     def handle(self):
         # Escribe dirección y puerto del cliente (de tupla client_address)
         #self.wfile.write(b"Hemos recibido tu peticion")
+        
         while 1:
             # Leyendo línea a línea lo que nos envía el cliente
             line = self.rfile.read()
            # print(line.decode('utf-8'))
-            
+           # Si no hay más líneas salimos del bucle infinito
+            if  len(line) == 0:
+                break
             # compruebo si recibo un invite y le envio la respuesta
-            if line.decode('utf-8').split(" ")[0] == "INVITE" :
+            elif line.decode('utf-8').split(" ")[0] == "Invite" :
                 print("El cliente nos manda " + line.decode('utf-8'))
                 self.wfile.write(b"SIP/2.0 100 Trying SIP/2.0 180 Ringing SIP/2.0 200 OK.")
-            if line.decode('utf-8').split(" ")[0] == "ACK" :
+            elif line.decode('utf-8').split(" ")[0] == "Ack" :
+                os.system('mp32rtp -i 127.0.0.1 -p 23032 < ' + audio_fich)
                 print("El cliente nos manda " + line.decode('utf-8'))
-                self.wfile.write(b"200 OK")
-             
-            # Si no hay más líneas salimos del bucle infinito
-            if not line:
-                break
-
+            elif line.decode('utf-8').split(" ")[0] == "Bye" :
+                print("El cliente nos manda " + line.decode('utf-8'))
+                self.wfile.write(b" 200 ok")
+            elif line.decode('utf-8').split(" ")[0] != ("Invite" or "Ack"):
+                self.wfile.write(b"SIP/2.0 405 Method Not Allowed")
+ 
+                
+           
 if __name__ == "__main__":
     try:
         # Creamos servidor de eco y escuchamos
