@@ -37,12 +37,13 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
 
     if data.decode('utf-8').split(" ")[1] == "100":
         print('Recibido la respuesta: -- ', data.decode('utf-8'))
-        LINE_ACK = "ACK" + ' SIP:' + sys.argv[2].split(':')[0] + ' SIP/2.0' 
+        LINE_ACK = "Ack" + ' SIP:' + sys.argv[2].split(':')[0] + ' SIP/2.0' 
         print("Enviando: " + LINE_ACK )
-        my_socket.send(bytes(LINE_ACK, 'utf-8') + b'\r\n\r\n')
-    if data.decode('utf-8').split(" ")[0] == "200":
-        print("El servidor ha recibido mi ACK")
-        
+        my_socket.send(bytes(LINE_ACK, 'utf-8') + b'\r\n\r\n')    
+    elif data.decode('utf-8').split(" ")[1] == "405":
+        print('Recibido:', data.decode('utf-8'))
+    elif data.decode('utf-8').split(" ")[1] == "200":
+        print('Recibido:', data.decode('utf-8'))
     print("Terminando socket...")
 
 print("Fin.")
