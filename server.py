@@ -16,7 +16,7 @@ if len(sys.argv) == 4:
     else:
         sys.exit("Usage: <IP><PORT><cancion.mp3>")
 else:
-    sys.exit("Usage: python3 client.py method receiver@IP:SIPport")
+    sys.exit("Usage: python3 server.py IP port audio_file")
     
 
 class EchoHandler(socketserver.DatagramRequestHandler):
@@ -26,12 +26,20 @@ class EchoHandler(socketserver.DatagramRequestHandler):
 
     def handle(self):
         # Escribe dirección y puerto del cliente (de tupla client_address)
-        self.wfile.write(b"Hemos recibido tu peticion")
+        #self.wfile.write(b"Hemos recibido tu peticion")
         while 1:
             # Leyendo línea a línea lo que nos envía el cliente
             line = self.rfile.read()
-            print(line.decode('utf-8'))
-            print("El cliente nos manda " + line.decode('utf-8'))
+           # print(line.decode('utf-8'))
+            
+            # compruebo si recibo un invite y le envio la respuesta
+            if line.decode('utf-8').split(" ")[0] == "INVITE" :
+                print("El cliente nos manda " + line.decode('utf-8'))
+                self.wfile.write(b"SIP/2.0 100 Trying SIP/2.0 180 Ringing SIP/2.0 200 OK.")
+            if line.decode('utf-8').split(" ")[0] == "ACK" :
+                print("El cliente nos manda " + line.decode('utf-8'))
+                self.wfile.write(b"200 OK")
+             
             # Si no hay más líneas salimos del bucle infinito
             if not line:
                 break
