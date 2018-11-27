@@ -1,17 +1,15 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-"""
-Programa cliente que abre un socket a un servidor
-"""
+"""Programa cliente que abre un socket a un servidor."""
 
 import socket
 import sys
 # Cliente UDP simple.
 
 # Dirección IP del servidor.
-if len(sys.argv) != 3 :
+if len(sys.argv) != 3:
     sys.exit("Usage: python3 client.py method receiver@IP:SIPport")
-    
+
 try:
     Metodo = sys.argv[1]
     # voy a separa mi segundo argumento en partes
@@ -20,11 +18,11 @@ try:
     Dividir2 = Dividir[1].split(':')
     Ip = Dividir2[0]
     Port = int(Dividir2[1])
-except:
+except NameError:
     sys.exit("Usage: python3 client.py method receiver@IP:SIPport")
 
 # Contenido que vamos a enviar
-LINE = Metodo + ' SIP:' + sys.argv[2].split(':')[0] + ' SIP/2.0' 
+LINE = Metodo + ' sip:' + sys.argv[2].split(':')[0] + ' SIP/2.0'
 
 # Creamos el socket, lo configuramos y lo atamos a un servidor/puerto
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
@@ -37,12 +35,14 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
 
     if data.decode('utf-8').split(" ")[1] == "100":
         print('Recibido la respuesta: -- ', data.decode('utf-8'))
-        LINE_ACK = "Ack" + ' SIP:' + sys.argv[2].split(':')[0] + ' SIP/2.0' 
-        print("Enviando: " + LINE_ACK )
-        my_socket.send(bytes(LINE_ACK, 'utf-8') + b'\r\n\r\n')    
+        LINE_ACK = "Ack" + ' sip:' + sys.argv[2].split(':')[0] + ' SIP/2.0'
+        print("Enviando: " + LINE_ACK)
+        my_socket.send(bytes(LINE_ACK, 'utf-8') + b'\r\n\r\n')
     elif data.decode('utf-8').split(" ")[1] == "405":
         print('Recibido:', data.decode('utf-8'))
     elif data.decode('utf-8').split(" ")[1] == "200":
+        print('Recibido:', data.decode('utf-8'))
+    elif data.decode('utf-8').split(" ")[1] == "400":
         print('Recibido:', data.decode('utf-8'))
     print("Terminando socket...")
 
